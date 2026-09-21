@@ -1,0 +1,24 @@
+services:
+  server:
+    image: ifajardov/puzzle-server
+    ports:
+      - "8080:8080"
+
+  solver:
+    build: .
+    depends_on:
+      - server
+    environment:
+      - PUZZLE_SERVER_URL=http://server:8080
+    profiles:
+      - solver
+
+  test:
+    build: .
+    depends_on:
+      - server
+    environment:
+      - PUZZLE_SERVER_URL=http://server:8080
+    command: pytest
+    profiles:
+      - test

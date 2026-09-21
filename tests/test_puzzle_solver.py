@@ -25,7 +25,7 @@ async def test_solver_should_stop_when_index_exists():
     solver = PuzzleSolver(PuzzleClient(client), limit=4)
 
     result = await solver.solve()
-    
+
     assert len(calls) == 4
     assert result == 'hello crazy world'
 

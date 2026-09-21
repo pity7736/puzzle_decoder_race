@@ -28,9 +28,10 @@ class Result[T]:
 
 
 class PuzzleClient:
-    
-    def __init__(self, http_client: httpx.AsyncClient) -> None:
+
+    def __init__(self, http_client: httpx.AsyncClient, base_url: str = 'http://localhost:8080') -> None:
         self._client = http_client
+        self._base_url = base_url
         self._since = 0
 
     async def get(self, limit: int) -> Result[list[dict]]:
@@ -48,7 +49,7 @@ class PuzzleClient:
 
     async def _do_request(self, i) -> dict | None:
         try:
-            response = await self._client.get(f'http://localhost:8080/fragment?id={i}')
+            response = await self._client.get(f'{self._base_url}/fragment?id={i}')
         except httpx.HTTPError:
             return None
         else:

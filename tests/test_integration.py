@@ -1,3 +1,4 @@
+import os
 import time
 
 import httpx
@@ -9,7 +10,8 @@ from src.puzzle_solver import PuzzleSolver
 
 @pytest.mark.asyncio
 async def test_right_message():
-    solver = PuzzleSolver(PuzzleClient(httpx.AsyncClient()))
+    base_url = os.getenv('PUZZLE_SERVER_URL', 'http://localhost:8080')
+    solver = PuzzleSolver(PuzzleClient(httpx.AsyncClient(), base_url))
 
     t = time.monotonic()
     message = await solver.solve()
