@@ -1,3 +1,5 @@
+import asyncio
+
 import httpx
 
 class Result[T]:
@@ -27,20 +29,30 @@ class Result[T]:
 
 class PuzzleClient:
     
-    def __init__(self, http_client: httpx.Client) -> None:
+    def __init__(self, http_client: httpx.AsyncClient) -> None:
         self._client = http_client
         self._since = 0
 
-    def get(self, limit: int) -> Result[list[dict]]:
-        result = []
+    async def get(self, limit: int) -> Result[list[dict]]:
+        tasks = []
         for i in range(self._since, limit):
-            try:
-                response = self._client.get(f'http://localhost:8080/fragment?id={i}')
-            except httpx.HTTPError:
-                return Result.error('unexpected error occurred')
-            else:
-               result.append(response.json())
-        
+            tasks.append(self._do_request(i))
+
         self._since = limit
-        return Result.ok(result)
+        task_result = await asyncio.gather(*tasks) 
+        for result in task_result:
+            if not result:
+                return Result.error("unexpected error occurred")
+
+        return Result.ok(task_result)
+
+    async def _do_request(self, i) -> dict | None:
+        try:
+            response = await self._client.get(f'http://localhost:8080/fragment?id={i}')
+        except httpx.HTTPError:
+            return None
+        else:
+           return response.json()
+        
+
 

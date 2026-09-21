@@ -4,22 +4,22 @@ from .puzzle_client import PuzzleClient
 
 class PuzzleSolver:
 
-    def __init__(self, client: PuzzleClient) -> None:
+    def __init__(self, client: PuzzleClient, limit: int = 30) -> None:
         self._client = client
         self._responses = {}
+        self._limit = limit
 
-    def solve(self) -> str:
-        n = 2
+    async def solve(self) -> str:
         exists = False
         while exists is False: 
-            responses = self._client.get(n)
+            responses = await self._client.get(self._limit)
             if responses.is_ok():
                 for data in responses.value():
                     if data['index'] in self._responses:
                         exists = True
                         break
                     self._responses[data['index']] = data
-                n += n
+                self._limit += self._limit
             else:
                 return responses.error_message()
 
