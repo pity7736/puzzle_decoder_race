@@ -1,5 +1,6 @@
 import httpx
 
+from src.puzzle_client import PuzzleClient
 from src.puzzle_solver import PuzzleSolver
 
 responses = (
@@ -19,7 +20,7 @@ def mock_handler(request: httpx.Request) -> httpx.Response:
 
 def test_solver_should_stop_when_index_exists():
     client = httpx.Client(transport=httpx.MockTransport(mock_handler))
-    solver = PuzzleSolver(client)
+    solver = PuzzleSolver(PuzzleClient(client))
 
     result = solver.solve()
     
