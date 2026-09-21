@@ -13,12 +13,15 @@ class PuzzleSolver:
         exists = False
         while exists is False: 
             responses = self._client.get(n)
-            for data in responses:
-                if data['index'] in self._responses:
-                    exists = True
-                    break
-                self._responses[data['index']] = data
-            n += n
+            if responses.is_ok():
+                for data in responses.value():
+                    if data['index'] in self._responses:
+                        exists = True
+                        break
+                    self._responses[data['index']] = data
+                n += n
+            else:
+                return responses.error_message()
 
         return ' '.join(d['text'] for d in sorted(self._responses.values(), key=lambda d: d['index']))
 

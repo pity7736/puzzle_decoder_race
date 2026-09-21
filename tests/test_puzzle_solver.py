@@ -27,3 +27,15 @@ def test_solver_should_stop_when_index_exists():
     assert len(calls) == 4
     assert result == 'hello crazy world'
 
+
+def test_solver_should_handle_connection_error():
+    def error_handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("connection refused")
+
+    client = httpx.Client(transport=httpx.MockTransport(error_handler))
+    solver = PuzzleSolver(PuzzleClient(client))
+
+    result = solver.solve()
+
+    assert result == 'unexpected error occurred'
+

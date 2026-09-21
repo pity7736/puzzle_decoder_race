@@ -26,7 +26,7 @@ def test_make_n_requests():
     client = PuzzleClient(http_client)
     result = client.get(3)
 
-    assert result == data
+    assert result.value() == data
 
 
 def test_consecutive_gets_fetch_correct_ranges():
@@ -38,9 +38,9 @@ def test_consecutive_gets_fetch_correct_ranges():
 
     client = PuzzleClient(httpx.Client(transport=httpx.MockTransport(handler)))
 
-    first = client.get(2)
-    second = client.get(4)
-    third = client.get(8)
+    first = client.get(2).value()
+    second = client.get(4).value()
+    third = client.get(8).value()
 
     assert first == [{'id': 0}, {'id': 1}]
     assert second == [{'id': 2}, {'id': 3}]
